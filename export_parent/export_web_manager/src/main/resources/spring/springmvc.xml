@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!--1.扫描Controller所在包（不要去扫描service）-->
+    <context:component-scan base-package="cn.itcast.web"/>
+
+    <!--2.配置视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--2.1 页面前缀 注意：放在WEB-INF下用户不能直接访问页面，更加安全-->
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <!--2.2 页面后缀-->
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--3.mvc注解驱动-->
+    <mvc:annotation-driven conversion-service="conversionService"/>
+
+    <!--配置类型转换器-->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <!--配置自定义转换器-->
+        <property name="converters">
+            <set>
+                <bean class="cn.itcast.web.converter.StringToDateConverter"/>
+            </set>
+        </property>
+    </bean>
+
+    <!--配置自定义异常处理类-->
+    <bean class="cn.itcast.web.exceptions.CustomExceptionRosolver"/>
+
+    <!--开启AOP切面注解: 整个项目扫描有没有@Aspect注解-->
+    <aop:aspectj-autoproxy/>
+
+
+    <!--文件上传相关配置-->
+    <!--1.加载七牛qiniu.properties-->
+    <context:property-placeholder location="classpath*:qiniu.properties"/>
+
+    <!--2.开启springmvc文件上传组件-->
+    <!--注意：必须给id，而且名称必须叫multipartResolver-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--限制文件大小-->
+        <property name="maxUploadSize" value="1000000"/>
+    </bean>
+
+
+</beans>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!--Dubbo配置-->
+    <!--1.指定服务名称-->
+    <dubbo:application name="export_web_manager"/>
+
+    <!--2.Zookeeper注册配置-->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
+
+    <!--3.包扫描@Reference-->
+    <dubbo:annotation package="cn.itcast.web"/>
+
+    <!--手动远程注入dubbo服务，代替@Reference-->
+    <!--
+       dubbo:reference: 手动创建远程调用服务
+          interface： 远程服务的接口
+          id: 把远程服务引用对象放入IOC容器
+    -->
+    <dubbo:reference id="contractService"  interface="cn.itcast.service.cargo.ContractService" timeout="100000"/>
+
+
+</beans>

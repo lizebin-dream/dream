@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.itcast.dao.system.RoleDao">
+    <resultMap id="BaseResultMap" type="cn.itcast.domain.system.Role">
+        <id column="role_id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="remark" property="remark"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="company_id" property="companyId"/>
+        <result column="company_name" property="companyName"/>
+    </resultMap>
+
+    <!--查询全部-->
+    <select id="findAll" resultMap="BaseResultMap">
+        select * from pe_role where company_id=#{companyId}
+    </select>
+
+    <!--根据id查询-->
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select * from pe_role where role_id = #{id}
+    </select>
+
+    <!--删除-->
+    <delete id="delete">
+        delete from pe_role where role_id = #{id}
+    </delete>
+
+    <!--保存-->
+    <insert id="save">
+        insert into pe_role (role_id, name, remark, order_no,company_id, company_name)
+        values (#{id}, #{name}, #{remark}, #{orderNo}, #{companyId}, #{companyName})
+    </insert>
+
+    <!--更新-->
+    <update id="update">
+        update pe_role
+        set name = #{name},
+          remark = #{remark},
+          order_no = #{orderNo}
+        where role_id = #{id}
+    </update>
+
+    <!--删除指定角色分配过的模块-->
+    <delete id="deleteRoleModuleByRoleId" parameterType="string">
+        DELETE FROM pe_role_module WHERE role_id = #{roleid}
+    </delete>
+
+    <!--添加角色的模块-->
+    <!--
+        如果方法有多个参数的情况
+          1）parameterType不能写
+          2）可以使用#{arg0} 或  #{param1} 取参数 或 定义@Param("roleid"),可以使用别名取参数
+    -->
+    <insert id="saveRoleMoudle">
+        INSERT INTO pe_role_module(role_id,module_id) VALUES(#{arg0},#{arg1})
+    </insert>
+</mapper>

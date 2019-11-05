@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--namespace: Dao接口的位置（Dao接口全名）-->
+<mapper namespace="cn.itcast.dao.stat.StatDao">
+
+    <!--统计生产商家销售金额-->
+    <!--resultType:如果是List集合类型，写List里面的元素类型-->
+    <select id="getFactoryData" parameterType="string" resultType="map">
+        SELECT
+          f.factory_name name,
+          IFNULL(SUM(cp.amount),0) value
+         FROM
+            co_factory f
+              LEFT JOIN co_contract_product cp ON cp.factory_id = f.id
+            WHERE cp.company_id = #{companyId}
+            GROUP BY cp.factory_name
+    </select>
+
+    <!--产品销售量要求按前5名统计-->
+    <select id="getSellData" parameterType="string" resultType="map">
+        SELECT
+          cp.product_no name,SUM(cp.amount) value
+         FROM co_contract_product cp
+          WHERE cp.company_id = #{companyId}
+           GROUP BY cp.product_no
+           ORDER BY SUM(cp.amount) DESC
+           LIMIT 5;
+    </select>
+
+    <!--每小时统计访问人数计-->
+    <select id="getOnlineData" parameterType="string" resultType="map">
+        SELECT
+           o.a1 name,
+           IFNULL(syslog.c,0) value
+          FROM
+            st_online_info o
+          LEFT JOIN
+        (SELECT
+          DATE_FORMAT(TIME,"%H") h,COUNT(*) c
+        FROM st_sys_log
+           WHERE company_id = #{companyId}
+          GROUP BY DATE_FORMAT(TIME,"%H")
+         ) syslog ON o.a1 = syslog.h
+    </select>
+
+</mapper>

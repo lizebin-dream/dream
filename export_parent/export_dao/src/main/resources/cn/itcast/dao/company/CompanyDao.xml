@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--namespace: Dao接口的位置（Dao接口全名）-->
+<mapper namespace="cn.itcast.dao.company.CompanyDao">
+
+    <resultMap id="BaseResultMap" type="cn.itcast.domain.company.Company">
+        <!--主键-->
+        <id property="id" column="id"/>
+        <!--其他字段 按住alt键-->
+        <result property="name" column="name"/>
+        <result property="expirationDate" column="expiration_date"/>
+        <result property="address" column="address"/>
+        <result property="licenseId" column="license_id"/>
+        <result property="representative" column="representative"/>
+        <result property="phone" column="phone"/>
+        <result property="companySize" column="company_size"/>
+        <result property="industry" column="industry"/>
+        <result property="remarks" column="remarks"/>
+        <result property="state" column="state"/>
+        <result property="balance" column="balance"/>
+        <result property="city" column="city"/>
+    </resultMap>
+
+    <!--查询所有企业-->
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT * FROM ss_company
+    </select>
+
+    <!--添加企业-->
+    <insert id="save" parameterType="cn.itcast.domain.company.Company">
+        insert into ss_company(
+            id,
+            name,
+            expiration_date,
+            address,
+            license_id,
+            representative,
+            phone,
+            company_size,
+            industry,
+            remarks,
+            state,
+            balance,
+            city
+        )values(
+            #{id},
+            #{name},
+            #{expirationDate},
+            #{address},
+            #{licenseId},
+            #{representative},
+            #{phone},
+            #{companySize},
+            #{industry},
+            #{remarks},
+            #{state},
+            #{balance},
+            #{city}
+        )
+    </insert>
+
+    <!--更新企业-->
+    <update id="update" parameterType="cn.itcast.domain.company.Company">
+        update ss_company SET
+            name = #{name},
+            expiration_date = #{expirationDate},
+            address = #{address},
+            license_id = #{licenseId},
+            representative = #{representative},
+            phone = #{phone},
+            company_size = #{companySize},
+            industry = #{industry},
+            remarks = #{remarks},
+            state = #{state},
+            balance = #{balance},
+            city = #{city}
+        where id = #{id}
+    </update>
+
+
+    <!--根据id查询企业-->
+    <!--
+        注意：只有一个输入参数且为基本类型的时候，参数占位名称可以随便写
+    -->
+    <select id="findById" parameterType="string" resultMap="BaseResultMap">
+        select * from ss_company where id = #{id}
+    </select>
+
+
+    <!--删除企业-->
+    <delete id="delete" parameterType="string">
+        delete from ss_company where id = #{id}
+    </delete>
+
+</mapper>

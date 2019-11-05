@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+
+    <!--1.创建连接工厂-->
+    <rabbit:connection-factory
+        id="connectionFactory"
+        host="192.168.66.133"
+        port="5672"
+        virtual-host="/itcast"
+        username="eric"
+        password="123"
+    />
+
+    <!--2.配置admin：管理连接与频道-->
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+    <!--3.声明队列（创建队列）-->
+    <rabbit:queue name="contractQueue"/>
+
+    <!--4.创建交换机，同时把队列绑定到交换机上-->
+    <!--
+      name：交换机的名称
+    -->
+    <rabbit:topic-exchange name="contractTopicExchange">
+        <!--把队列绑定到交换机上-->
+        <rabbit:bindings>
+            <!--
+              pattern: 指定routing key
+              queue: 绑定的队列名称
+            -->
+            <rabbit:binding pattern="contract.#" queue="contractQueue"></rabbit:binding>
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+
+    <!--5.创建RabbitTemplate对象：封装RabbitMQ的Api-->
+    <!--
+        message-converter: 消息内容转换器
+    -->
+    <rabbit:template id="rabbitTemplate"
+         connection-factory="connectionFactory"
+         exchange="contractTopicExchange"
+         message-converter="messageConverter"
+    />
+
+    <!--6.配置Json转换器（MQ传输过程中，用于Java与Json字符串之间转换）-->
+    <bean id="messageConverter" class="org.springframework.amqp.support.converter.Jackson2JsonMessageConverter"/>
+
+</beans>

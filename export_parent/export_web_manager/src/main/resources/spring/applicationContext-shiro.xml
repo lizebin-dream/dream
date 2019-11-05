@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--1.配置ShiroFilter对象，shiroFilter和web.xml配置filter-name保持一致的-->
+    <!--ShiroFilterFactoryBean: 处理用户的认证和授权的请求的对象-->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!--注入SecurityManager-->
+        <property name="securityManager" ref="securityManager"/>
+        <!--修改shiro默认登录页面-->
+        <property name="loginUrl" value="/login.jsp"/>
+        <!--授权失败提示页面-->
+        <property name="unauthorizedUrl" value="/unauthorized.jsp"/>
+
+        <!--添加shiro的过滤器-->
+        <property name="filterChainDefinitions">
+            <!--
+             注意：
+              1）拦截路径问题
+                * : 拦截一层目录
+                **： 拦截任意层目录
+              2）默认登录页面问题
+                  Shiro认证失败了，自动跳转到login.jsp页面，可以通过loginUrl参数修改默认登录页面
+
+            -->
+            <value>
+                /css/**=anon
+                /img/**=anon
+                /make/**=anon
+                /plugins/**=anon
+                /index.jsp=anon
+                /login.do=anon
+                <!--/company/list.do=perms["企业管理"]
+                /system/user/list.do=perms["用户管理"]-->
+                /**=authc
+            </value>
+        </property>
+    </bean>
+
+    <!--2.创建SecurityManager对象-->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <!--注入Realm-->
+        <property name="realm" ref="myRealm"/>
+    </bean>
+
+    <!--3.创建自定义Realm对象: 真正执行认证和授权逻辑的地方-->
+    <bean id="myRealm" class="cn.itcast.web.shiro.AuthRealm">
+        <!--注入凭证匹配器-->
+        <property name="credentialsMatcher" ref="credentialsMatcher"/>
+    </bean>
+
+    <!--创建凭证匹配器: 只是普通加密，没有加盐的-->
+    <!--指定算法
+         md5: 使用md5算法进行登录
+         sha1: 使用sha1算法进行登录
+       -->
+   <!-- <bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+        <property name="hashAlgorithmName" value="md5"/>
+    </bean>-->
+
+
+    <!--创建自定义凭证匹配器-->
+    <bean id="credentialsMatcher" class="cn.itcast.web.shiro.CustomCredentialsMatcher"/>
+
+    <!--开启Shiro的注解功能（底层是AOP）-->
+    <bean id="lifecycleBeanPostProcessor"
+          class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor"/>
+
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+</beans>

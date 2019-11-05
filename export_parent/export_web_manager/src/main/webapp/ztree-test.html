@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>演示ztree的使用</title>
+    <!--引入ztree的js与css文件-->
+    <script src="/plugins/ztree/js/jquery-1.4.4.min.js"></script>
+    <script src="/plugins/ztree/js/jquery.ztree.core-3.5.js"></script>
+    <script src="/plugins/ztree/js/jquery.ztree.excheck-3.5.js"></script>
+    <link rel="stylesheet" href="/plugins/ztree/css/zTreeStyle/zTreeStyle.css" type="text/css">
+</head>
+<body>
+
+<script>
+    //1.初始化参数配置（让树长成什么样子）
+    var setting = {
+        //开启复选框
+        check: {
+            enable: true
+        },
+        data: {
+            simpleData: {
+                enable: true
+            }
+        }
+    };
+
+    //2.准备节点数据（树的数据）- json格式
+    // id: 该节点的ID
+    // pId： 当前节点的父节点ID
+    // name: 节点显示的名称
+    //open： 是否展开节点（父节点才会有效果）
+    //checked: 复选框的状态，true：选中，false：没有选中（默认值）
+    var zNodes =[
+        { id:1, pId:0, name:"货运管理", open:true},
+        { id:11, pId:1, name:"购销合同", open:true},
+        { id:12, pId:1, name:"出口报运", open:true, checked: true }
+    ];
+
+
+    //3.渲染树
+    //参数一： 存放树的元素的ID
+    //参数二：初始化参数
+    //参数三：节点数据
+    $(function () { //页面元素加载完毕才加载树
+        $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+    });
+
+</script>
+
+
+<!--放树的地方-->
+<ul id="treeDemo" class="ztree"></ul>
+
+
+</body>
+</html>
